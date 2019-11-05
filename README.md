@@ -1,0 +1,2 @@
+# SaleManager.Api
+SaleManager.Api
