@@ -95,7 +95,7 @@ namespace SaleManager.Api.Controllers
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Auth0:JwtKey"]));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expires = DateTime.Now.AddDays(7);
+            var expires = DateTime.Now.AddDays(1);
 
             var token = new JwtSecurityToken(
                 _configuration["Auth0:JwtIssuer"],
