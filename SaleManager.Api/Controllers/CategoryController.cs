@@ -80,11 +80,11 @@ namespace SaleManager.Api.Controllers
         }
         [Authorize]
         [HttpPost("delete")]
-        public IActionResult DeleteCategory([FromBody]int id)
+        public IActionResult DeleteCategory([FromBody]CategoryViewModel model)
         {
             if (ModelState.IsValid)
             {
-                unitOfWork.CategoryRepository.Delete(id);
+                unitOfWork.CategoryRepository.Delete(model.Id);
                 unitOfWork.Commit();
                 return Ok();
             }

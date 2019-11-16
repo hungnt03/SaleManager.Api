@@ -61,6 +61,7 @@ namespace SaleManager.Api.Controllers
             return BadRequest(ModelState);
         }
 
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody]LoginViewModel model)
         {
