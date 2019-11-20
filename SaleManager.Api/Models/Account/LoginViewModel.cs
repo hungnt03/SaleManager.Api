@@ -8,9 +8,10 @@ namespace SaleManager.Api.Models
 {
     public class LoginViewModel
     {
+        [RegularExpression("[0-9a-z]+")]
         [Required]
-        [EmailAddress]
-        public string Email { get; set; }
+        [MaxLength(100)]
+        public string Username { set; get; }
 
         [Required]
         [DataType(DataType.Password)]
