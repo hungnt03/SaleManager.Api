@@ -38,7 +38,8 @@ namespace SaleManager.Api.Controllers
             _configuration = configuration;
         }
 
-        [Authorize(Roles ="admin,subAdmin")]
+        [Authorize(Roles ="admin")]
+        [Authorize(Roles = "subAdmin")]
         [HttpGet("users")]
         public IActionResult GetUsers()
         {
