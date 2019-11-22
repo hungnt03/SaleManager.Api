@@ -9,6 +9,7 @@ namespace SaleManager.Api.Models.Account
     public class UpdatePasswordViewModel
     {
         [Required]
+        [Display(Name = "Id")]
         public string Id { set; get; }
 
         [Required]
@@ -27,5 +28,7 @@ namespace SaleManager.Api.Models.Account
         [DataType(DataType.Password)]
         [Display(Name = "OldPassword")]
         public string OldPassword { get; set; }
+        [Display(Name = "Token")]
+        public string Token { set; get; }
     }
 }

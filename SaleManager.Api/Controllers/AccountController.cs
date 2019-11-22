@@ -5,19 +5,16 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using SaleManager.Api.Entities;
 using SaleManager.Api.Models;
 using SaleManager.Api.Models.Account;
+using System.Net.Mail;
+using System.Net.Mime;
 
 namespace SaleManager.Api.Controllers
 {
@@ -138,30 +135,80 @@ namespace SaleManager.Api.Controllers
         }
 
         //TODO
-        [Authorize(Roles ="admin")]
         [HttpPost("resetPassword")]
-        public async Task<IActionResult> ResetPassword([FromBody]UpdatePasswordViewModel model)
+        public async Task<IActionResult> ResetPassword([FromBody]SingleIdViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var user = await _userManager.FindByNameAsync(model.Id);
+
+            if (user == null)
+            {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                // Send email
+                    SmtpClient mySmtpClient = new SmtpClient("my.smtp.exampleserver.net");
+                    // set smtp-client with basicAuthentication
+                    mySmtpClient.UseDefaultCredentials = false;
+                    System.Net.NetworkCredential basicAuthenticationInfo = new
+                       System.Net.NetworkCredential("username", "password");
+                    mySmtpClient.Credentials = basicAuthenticationInfo;
+
+                    // add from,to mailaddresses
+                    MailAddress from = new MailAddress("test@example.com", "TestFromName");
+                    MailAddress to = new MailAddress(user.Email, "TestToName");
+                    MailMessage myMail = new System.Net.Mail.MailMessage(from, to);
+
+                    // add ReplyTo
+                    //MailAddress replyto = new MailAddress("reply@example.com");
+                    //myMail.ReplyToList.Add(replyTo);
+
+                    // set subject and encoding
+                    myMail.Subject = "Cài đặt lại mật khẩu";
+                    myMail.SubjectEncoding = System.Text.Encoding.UTF8;
+
+                    // set body-message and encoding
+                    myMail.Body = "<b>Test Mail</b><br>using <b><br>"+ token +"HTML</b>.";
+                    myMail.BodyEncoding = System.Text.Encoding.UTF8;
+                    // text or html
+                    myMail.IsBodyHtml = true;
+
+                try
+                {
+                    mySmtpClient.Send(myMail);
+                }
+                catch (Exception)
+                {
+                    return BadRequest(ModelState);
+                }
+            }
+            return Ok();
+        }
+
+        //TODO
+        [HttpPost("confirmResetPassword")]
+        public async Task<IActionResult> ConfirmResetPassword([FromBody]UpdatePasswordViewModel model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var user = await _userManager.FindByIdAsync(model.Id);
 
-            //if (user != null)
-            //{
-            //    var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.Password);
-            //    if (result.Succeeded)
-            //    {
-            //        return Ok(result);
-            //    }
-            //    AddErrors(result);
-            //}
+            if (user != null)
+            {
+                var result = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
+                if (result.Succeeded)
+                {
+                    return Ok(result);
+                }
+                AddErrors(result);
+            }
             return BadRequest(ModelState);
         }
 
         [Authorize(Roles = "admin")]
         [HttpPost("delete")]
-        public async Task<IActionResult> Delete([FromBody]DeleteAccountViewModel model)
+        public async Task<IActionResult> Delete([FromBody]SingleIdViewModel model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -181,7 +228,7 @@ namespace SaleManager.Api.Controllers
 
         [Authorize]
         [HttpPost("getRoles")]
-        public async Task<IActionResult> GetRoles([FromBody]DeleteAccountViewModel model)
+        public async Task<IActionResult> GetRoles([FromBody]SingleIdViewModel model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

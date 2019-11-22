@@ -9,6 +9,8 @@ namespace SaleManager.Api.Infrastructures
     public interface IUnitOfWork
     {
         GenericRepository<Category> CategoryRepository { get; }
+        GenericRepository<Supplier> SupplierRepository { get; }
+        GenericRepository<Product> ProductRepository { get; }
 
         void Commit();
         void Rollback();
@@ -18,7 +20,9 @@ namespace SaleManager.Api.Infrastructures
         private ApplicationDbContext context;
         private bool disposed = false;
         private GenericRepository<Category> categoryRepository;
-        
+        private GenericRepository<Supplier> supplierRepository;
+        private GenericRepository<Product> productRepository;
+
         public UnitOfWork(ApplicationDbContext context)
         {
             this.context = context;
@@ -32,8 +36,28 @@ namespace SaleManager.Api.Infrastructures
                 return categoryRepository;
             }
         }
+        public GenericRepository<Supplier> SupplierRepository
+        {
+            get
+            {
+                if (this.supplierRepository == null)
+                    this.supplierRepository = new GenericRepository<Supplier>(context);
+                return supplierRepository;
+            }
+        }
+        public GenericRepository<Product> ProductRepository
+        {
+            get
+            {
+                if (this.productRepository == null)
+                    this.productRepository = new GenericRepository<Product>(context);
+                return productRepository;
+            }
+        }
 
         GenericRepository<Category> IUnitOfWork.CategoryRepository => CategoryRepository;
+        GenericRepository<Supplier> IUnitOfWork.SupplierRepository => SupplierRepository;
+        GenericRepository<Product> IUnitOfWork.ProductRepository => ProductRepository;
 
         public void Commit()
         {

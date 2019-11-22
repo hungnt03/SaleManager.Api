@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SaleManager.Api.Models.Account
 {
-    public class DeleteAccountViewModel
+    public class SingleIdViewModel
     {
         [Required]
         public string Id { set; get; }
