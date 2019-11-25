@@ -88,5 +88,25 @@ namespace SaleManager.Api.Controllers
             }
             return BadRequest(ModelState);
         }
+
+        [Authorize]
+        [HttpPost("add")]
+        public IActionResult AddProduct([FromBody]ProductAddModel model)
+        {
+            //if (ModelState.IsValid)
+            //{
+            //    var category = new Category()
+            //    {
+            //        Name = model.Name,
+            //        Description = model.Description,
+            //        CreatedBy = this.User.Identity.Name,
+            //        CreatedDate = DateTime.Now
+            //    };
+            //    var result = unitOfWork.CategoryRepository.Add(category);
+            //    unitOfWork.Commit();
+            //    return Ok(result);
+            //}
+            return BadRequest(ModelState);
+        }
     }
 }

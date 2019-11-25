@@ -46,5 +46,6 @@ namespace SaleManager.Api.Models
         [Required]
         [Display(Name = "JoinDate")]
         public DateTime JoinDate { get; set; }
+        public bool IsEnable { set; get; }
     }
 }

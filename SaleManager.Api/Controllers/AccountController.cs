@@ -35,9 +35,9 @@ namespace SaleManager.Api.Controllers
             _configuration = configuration;
         }
 
-        [Authorize(Roles ="admin")]
-        [Authorize(Roles = "subAdmin")]
-        [HttpGet("users")]
+        [Authorize(Roles = "admin")]
+        //[Authorize(Roles = "subAdmin")]
+        [HttpPost("users")]
         public IActionResult GetUsers()
         {
             var results = new List<UserViewModel>();
@@ -55,7 +55,8 @@ namespace SaleManager.Api.Controllers
                     LastName = user.LastName,
                     Email = user.Email,
                     Level = user.Level,
-                    JoinDate = user.JoinDate
+                    JoinDate = user.JoinDate,
+                    IsEnable = user.IsEnable
                 });
             }
             return Ok(results);
@@ -73,7 +74,8 @@ namespace SaleManager.Api.Controllers
                     FirstName = model.FirstName,
                     LastName = model.LastName,
                     Level = model.Level,
-                    JoinDate = DateTime.Now.AddYears(-2)
+                    JoinDate = DateTime.Now,
+                    IsEnable = true
                 };
                 var result = await _userManager.CreateAsync(userRegis, model.Password);
                 if (result.Succeeded)
@@ -103,6 +105,7 @@ namespace SaleManager.Api.Controllers
                 user.FirstName = model.FirstName;
                 user.LastName = model.LastName;
                 user.Level = model.Level;
+                user.IsEnable = model.IsEnable;
                 var result = await _userManager.UpdateAsync(user);
                 if (result.Succeeded)
                 {

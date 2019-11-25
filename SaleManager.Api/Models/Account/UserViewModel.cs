@@ -14,5 +14,6 @@ namespace SaleManager.Api.Models
         public string LastName { get; set; }
         public byte Level { get; set; }
         public DateTime JoinDate { get; set; }
+        public bool IsEnable { set; get; }
     }
 }

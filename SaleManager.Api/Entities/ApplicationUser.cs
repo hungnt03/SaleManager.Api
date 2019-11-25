@@ -21,5 +21,6 @@ namespace SaleManager.Api.Entities
 
         [Required]
         public DateTime JoinDate { get; set; }
+        public bool IsEnable { set; get; }
     }
 }

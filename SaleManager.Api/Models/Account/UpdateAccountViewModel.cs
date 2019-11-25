@@ -21,5 +21,7 @@ namespace SaleManager.Api.Models
 
         [Display(Name = "Level")]
         public byte Level { get; set; }
+        [Display(Name = "IsEnable")]
+        public bool IsEnable { get; set; }
     }
 }
