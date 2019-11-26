@@ -39,6 +39,8 @@ namespace SaleManager.Api.Infrastructures
         int Count(Expression<Func<T, bool>> where);
 
         bool CheckContains(Expression<Func<T, bool>> predicate);
+
+        ApplicationDbContext GetContext();
     }
 
     public class GenericRepository<T> : IGenericRepository<T> where T : class
@@ -160,6 +162,11 @@ namespace SaleManager.Api.Infrastructures
         public virtual async Task<IEnumerable<T>> GetMany(Expression<Func<T, bool>> where, string includes)
         {
             return await dbSet.Where(where).ToListAsync();
+        }
+
+        public ApplicationDbContext GetContext()
+        {
+            return context;
         }
     }
 }

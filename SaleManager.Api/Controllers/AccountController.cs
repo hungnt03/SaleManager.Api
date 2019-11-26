@@ -255,20 +255,22 @@ namespace SaleManager.Api.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPost("addRole")]
-        public async Task<IActionResult> AddToRole([FromBody]RoleModelView model)
+        public async Task<IActionResult> AddToRole([FromBody]RoleModelViews model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            if (model.Roles == null || model.Roles.Count == 0)
+                return Ok();
 
             var user = await _userManager.FindByIdAsync(model.Id);
             if (user != null)
             {
-                var result = await _userManager.AddToRoleAsync(user, model.Role);
-                if (result.Succeeded)
-                {
-                    return Ok(result);
-                }
-                AddErrors(result);
+                var currRoles = await _userManager.GetRolesAsync(user);
+                foreach (var role in currRoles)
+                    await _userManager.RemoveFromRoleAsync(user, role);
+                foreach(var role in model.Roles)
+                    await _userManager.AddToRoleAsync(user, role);
+                return Ok();   
             }
             return BadRequest(ModelState);
         }
@@ -312,9 +314,12 @@ namespace SaleManager.Api.Controllers
                 if (result.Succeeded)
                 {
                     var user = await _userManager.FindByNameAsync(model.Username);
-                    var roles = _userManager.GetRolesAsync(user).Result.ToList();
-                    var token = await GenerateJwtTokenAsync(user, roles);
-                    return Ok(token);
+                    if (user.IsEnable)
+                    {
+                        var roles = _userManager.GetRolesAsync(user).Result.ToList();
+                        var token = await GenerateJwtTokenAsync(user, roles);
+                        return Ok(token);
+                    }
                 }
             }
 
