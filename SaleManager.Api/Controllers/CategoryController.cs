@@ -18,7 +18,6 @@ namespace SaleManager.Api.Controllers
         private IUnitOfWork unitOfWork;
         public CategoryController(IUnitOfWork unitOfWork)
         {
-            
             this.unitOfWork = unitOfWork;
         }
 
