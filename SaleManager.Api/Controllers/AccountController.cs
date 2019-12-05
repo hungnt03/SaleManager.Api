@@ -75,7 +75,7 @@ namespace SaleManager.Api.Controllers
                     LastName = model.LastName,
                     Level = model.Level,
                     JoinDate = DateTime.Now,
-                    IsEnable = true
+                    IsEnable = false
                 };
                 var result = await _userManager.CreateAsync(userRegis, model.Password);
                 if (result.Succeeded)
@@ -299,7 +299,7 @@ namespace SaleManager.Api.Controllers
         [HttpPost("current")]
         public async Task<IActionResult> Current()
         {
-            var user = await _userManager.FindByIdAsync(_userManager.Users.FirstOrDefault().Id);
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
             var roles = await _userManager.GetRolesAsync(user);
             return Ok(new { User = user, Roles = roles });
         }
