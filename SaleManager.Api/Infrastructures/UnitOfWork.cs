@@ -10,6 +10,7 @@ namespace SaleManager.Api.Infrastructures
     {
         GenericRepository<Category> CategoryRepository { get; }
         GenericRepository<Supplier> SupplierRepository { get; }
+        GenericRepository<Customer> CustomerRepository { get; }
         GenericRepository<Product> ProductRepository { get; }
 
         void Commit();
@@ -21,6 +22,7 @@ namespace SaleManager.Api.Infrastructures
         private bool disposed = false;
         private GenericRepository<Category> categoryRepository;
         private GenericRepository<Supplier> supplierRepository;
+        private GenericRepository<Customer> customerRepository;
         private GenericRepository<Product> productRepository;
 
         public UnitOfWork(ApplicationDbContext context)
@@ -43,6 +45,15 @@ namespace SaleManager.Api.Infrastructures
                 if (this.supplierRepository == null)
                     this.supplierRepository = new GenericRepository<Supplier>(context);
                 return supplierRepository;
+            }
+        }
+        public GenericRepository<Customer> CustomerRepository
+        {
+            get
+            {
+                if (this.customerRepository == null)
+                    this.customerRepository = new GenericRepository<Customer>(context);
+                return customerRepository;
             }
         }
         public GenericRepository<Product> ProductRepository
