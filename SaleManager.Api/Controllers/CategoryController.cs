@@ -77,6 +77,7 @@ namespace SaleManager.Api.Controllers
             }
             return BadRequest(ModelState);
         }
+
         [Authorize]
         [HttpPost("delete")]
         public IActionResult DeleteCategory([FromBody]CategoryViewModel model)
@@ -89,6 +90,5 @@ namespace SaleManager.Api.Controllers
             }
             return BadRequest(ModelState);
         }
-
     }
 }

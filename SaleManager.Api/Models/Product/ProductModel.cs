@@ -11,7 +11,7 @@ namespace SaleManager.Api.Models.Product
         public string Name { set; get; }
         public Decimal Price { set; get; }
         public DateTime? ExpDate { set; get; }
-        public string Category { set; get; }
-        public string Supplier { set; get; }
+        public int CategoryId { set; get; }
+        public int SupplierId { set; get; }
     }
 }
