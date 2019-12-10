@@ -24,6 +24,6 @@ namespace SaleManager.Api.Infrastructures.Entities
         public DateTime? ExpirationDate { set; get; }
         [StringLength(50)]
         public string Unit { set; get; }
-        public string BarcodeImg { set; get; }
+        public string Img { set; get; }
     }
 }

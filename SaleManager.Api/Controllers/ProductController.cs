@@ -8,8 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using SaleManager.Api.Infrastructures;
 using SaleManager.Api.Infrastructures.Entities;
 using SaleManager.Api.Models.Product;
-using ZXing;
-using ZXing.Presentation;
 
 namespace SaleManager.Api.Controllers
 {
@@ -24,10 +22,11 @@ namespace SaleManager.Api.Controllers
             this.unitOfWork = unitOfWork;
         }
 
-        [HttpGet("products")]
+        [HttpGet("getall")]
         public async Task<IActionResult> GetProducts()
         {
             var datas = await unitOfWork.ProductRepository.GetAll();
+            AddImagePath(ref datas);
             return Ok(datas.OrderBy(r => r.Name));
         }
 
@@ -109,16 +108,11 @@ namespace SaleManager.Api.Controllers
                     model.Barcode = barcode;
                 }
 
-                var currentPath = Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()));
-                var writer = new BarcodeWriter();
-                writer.Format = BarcodeFormat.EAN_13;
-                var bitmap = writer.Write(model.Barcode);
-
                 product = new Product()
                 {
                     Barcode = model.Barcode,
                     CategoryId = model.CategoryId,
-                    BarcodeImg = "Assert/Barcode/" + model.Barcode + ".jpeg",
+                    Img = string.Empty,
                     CreatedBy = this.User.Identity.Name,
                     CreatedDate = DateTime.Now,
                     Enable = model.Enable,
@@ -178,6 +172,13 @@ namespace SaleManager.Api.Controllers
                 return Ok();
             }
             return BadRequest(ModelState);
+        }
+        private void AddImagePath(ref IEnumerable<Product> products)
+        {
+            string currPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..\\..\\..\\"));
+            foreach (var product in products)
+                if (!string.IsNullOrEmpty(product.Img))
+                    product.Img = currPath + product.Img;
         }
     }
 }
