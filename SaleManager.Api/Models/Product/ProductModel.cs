@@ -13,5 +13,10 @@ namespace SaleManager.Api.Models.Product
         public DateTime? ExpDate { set; get; }
         public int CategoryId { set; get; }
         public int SupplierId { set; get; }
+        public int Quantity { set; get; }
+        public bool Pin { set; get; }
+        public bool Enable { set; get; }
+        public string Unit { set; get; }
+        public string Img { set; get; }
     }
 }

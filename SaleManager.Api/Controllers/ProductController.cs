@@ -36,17 +36,8 @@ namespace SaleManager.Api.Controllers
             if (ModelState.IsValid)
             {
                 var product = await unitOfWork.ProductRepository.GetSingleByCondition(c=>c.Barcode.Equals(model.Barcode));
-                var categories = await unitOfWork.CategoryRepository.GetAll();
-                var suppliers = await unitOfWork.SupplierRepository.GetAll();
-                return Ok(new ProductModel()
-                {
-                    Barcode = product.Barcode,
-                    Name = product.Name,
-                    Price = product.Price,
-                    ExpDate = product.ExpirationDate,
-                    CategoryId = product.CategoryId,
-                    SupplierId = product.SupplierId,
-                });
+                AddImagePath(ref product);
+                return Ok(product);
             }
             return BadRequest(ModelState);
         }
@@ -54,18 +45,19 @@ namespace SaleManager.Api.Controllers
         [HttpPost("search")]
         public async Task<IActionResult> SearchProducts([FromBody] ConditionProductViewModel model)
         {
-            int total = 0;
-            int index = 0;
-            int size = 20;
             var products = new List<ProductModel>();
             if (ModelState.IsValid)
             {
-                var datas = unitOfWork.ProductRepository.GetMultiPaging(r =>
-                (!string.IsNullOrEmpty(model.NameOrBarcode) && r.Name.Contains(model.NameOrBarcode)) ||
-                (model.Category != 0 && r.CategoryId == model.Category) ||
-                (model.Supplier != 0 && r.SupplierId == model.Supplier), out total, index, size);
-                int totalPage = (int)Math.Ceiling((double)total / size);
-                await foreach (var product in datas)
+                IEnumerable<Product> datas;
+                if(model.IsEmpty())
+                    datas = await unitOfWork.ProductRepository.GetAll();
+                else
+                    datas = await unitOfWork.ProductRepository.GetMulti(r =>
+                        (!string.IsNullOrEmpty(model.NameOrBarcode) && r.Name.Contains(model.NameOrBarcode)) ||
+                        (model.Category != 0 && r.CategoryId == model.Category) ||
+                        (model.Supplier != 0 && r.SupplierId == model.Supplier));
+                AddImagePath(ref datas);
+                foreach (var product in datas)
                 {
                     products.Add(new ProductModel()
                     {
@@ -75,16 +67,10 @@ namespace SaleManager.Api.Controllers
                         ExpDate = product.ExpirationDate,
                         CategoryId = product.CategoryId,
                         SupplierId = product.SupplierId,
+                        Img = product.Img
                     });
                 }
-                return Ok(new PaginationSet<ProductModel>()
-                {
-                    Items = products,
-                    MaxPage = total,
-                    Page = index,
-                    TotalCount = total,
-                    TotalPages = totalPage
-                });
+                return Ok(products);
             }
             return BadRequest(ModelState);
         }
@@ -179,6 +165,12 @@ namespace SaleManager.Api.Controllers
             foreach (var product in products)
                 if (!string.IsNullOrEmpty(product.Img))
                     product.Img = currPath + product.Img;
+        }
+        private void AddImagePath(ref Product product)
+        {
+            string currPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..\\..\\..\\"));
+            if (!string.IsNullOrEmpty(product.Img))
+                product.Img = currPath + product.Img;
         }
     }
 }

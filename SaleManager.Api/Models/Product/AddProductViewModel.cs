@@ -31,5 +31,8 @@ namespace SaleManager.Api.Models.Product
         [StringLength(50)]
         [Display(Name = "Unit")]
         public string Unit { set; get; }
+        [StringLength(50)]
+        [Display(Name = "Unit")]
+        public string Img { get; set; }
     }
 }
