@@ -15,6 +15,7 @@ using SaleManager.Api.Models;
 using SaleManager.Api.Models.Account;
 using System.Net.Mail;
 using System.Net.Mime;
+using SaleManager.Api.Infrastructures;
 
 namespace SaleManager.Api.Controllers
 {
@@ -301,7 +302,7 @@ namespace SaleManager.Api.Controllers
         {
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
             var roles = await _userManager.GetRolesAsync(user);
-            return Ok(new { User = user, Roles = roles });
+            return Ok(new ResponseData(new { User = user, Roles = roles }));
         }
 
         [AllowAnonymous]
@@ -318,7 +319,7 @@ namespace SaleManager.Api.Controllers
                     {
                         var roles = _userManager.GetRolesAsync(user).Result.ToList();
                         var token = await GenerateJwtTokenAsync(user, roles);
-                        return Ok(token);
+                        return Ok(new ResponseData(token,"haha"));
                     }
                 }
             }
