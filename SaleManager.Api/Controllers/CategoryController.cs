@@ -26,7 +26,7 @@ namespace SaleManager.Api.Controllers
         public async Task<IActionResult> GetAll()
         {
             var datas = await unitOfWork.CategoryRepository.GetAll();
-            return Ok(datas);
+            return Ok(new ResponseData(datas));
         }
 
         [Authorize]
@@ -34,7 +34,7 @@ namespace SaleManager.Api.Controllers
         public IActionResult GetById(int id)
         {
             var data = unitOfWork.CategoryRepository.GetSingleById(id);
-            return Ok(data);
+            return Ok(new ResponseData(data));
         }
 
         [Authorize]
@@ -52,9 +52,9 @@ namespace SaleManager.Api.Controllers
                 };
                 var result = unitOfWork.CategoryRepository.Add(category);
                 unitOfWork.Commit();
-                return Ok(result);
+                return Ok(new ResponseData(result));
             }
-            return BadRequest(ModelState);
+            return BadRequest(new ResponseData(ModelState));
         }
 
         [Authorize]
@@ -75,7 +75,7 @@ namespace SaleManager.Api.Controllers
                 unitOfWork.Commit();
                 return Ok();
             }
-            return BadRequest(ModelState);
+            return BadRequest(new ResponseData(ModelState));
         }
 
         [Authorize]
@@ -88,7 +88,7 @@ namespace SaleManager.Api.Controllers
                 unitOfWork.Commit();
                 return Ok();
             }
-            return BadRequest(ModelState);
+            return BadRequest(new ResponseData(ModelState));
         }
     }
 }

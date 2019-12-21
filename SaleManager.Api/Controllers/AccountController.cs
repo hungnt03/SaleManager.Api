@@ -60,7 +60,7 @@ namespace SaleManager.Api.Controllers
                     IsEnable = user.IsEnable
                 });
             }
-            return Ok(results);
+            return Ok(new ResponseData(results));
         }
 
         [HttpPost("register")]
@@ -85,12 +85,12 @@ namespace SaleManager.Api.Controllers
                     var roles = _userManager.GetRolesAsync(user).Result.ToList();
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     var token = await GenerateJwtTokenAsync(user, roles);
-                    return Ok(token);
+                    return Ok(new ResponseData(token));
                 }
                 AddErrors(result);
             }
 
-            return BadRequest(ModelState);
+            return BadRequest(new ResponseData(ModelState));
         }
 
         [Authorize]
@@ -98,7 +98,7 @@ namespace SaleManager.Api.Controllers
         public async Task<IActionResult> Update([FromBody]UpdateAccountViewModel model)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return BadRequest(new ResponseData(ModelState));
 
             var user = await _userManager.FindByIdAsync(model.Id);
             if (user != null)
@@ -110,11 +110,11 @@ namespace SaleManager.Api.Controllers
                 var result = await _userManager.UpdateAsync(user);
                 if (result.Succeeded)
                 {
-                    return Ok(result);
+                    return Ok(new ResponseData(result));
                 }
                 AddErrors(result);
             }
-            return BadRequest(ModelState);
+            return BadRequest(new ResponseData(ModelState));
         }
 
         [Authorize]
@@ -122,7 +122,7 @@ namespace SaleManager.Api.Controllers
         public async Task<IActionResult> ChangePassword([FromBody]UpdatePasswordViewModel model)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return BadRequest(new ResponseData(ModelState));
 
             var user = await _userManager.FindByIdAsync(model.Id);
 
@@ -131,11 +131,11 @@ namespace SaleManager.Api.Controllers
                 var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.Password);
                 if (result.Succeeded)
                 {
-                    return Ok(result);
+                    return Ok(new ResponseData(result));
                 }
                 AddErrors(result);
             }
-            return BadRequest(ModelState);
+            return BadRequest(new ResponseData(ModelState));
         }
 
         //TODO
@@ -143,7 +143,7 @@ namespace SaleManager.Api.Controllers
         public async Task<IActionResult> ResetPassword([FromBody]SingleIdViewModel model)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return BadRequest(new ResponseData(ModelState));
 
             var user = await _userManager.FindByNameAsync(model.Id);
 
@@ -183,7 +183,7 @@ namespace SaleManager.Api.Controllers
                 }
                 catch (Exception)
                 {
-                    return BadRequest(ModelState);
+                    return BadRequest(new ResponseData(ModelState));
                 }
             }
             return Ok();
@@ -194,7 +194,7 @@ namespace SaleManager.Api.Controllers
         public async Task<IActionResult> ConfirmResetPassword([FromBody]UpdatePasswordViewModel model)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return BadRequest(new ResponseData(ModelState));
 
             var user = await _userManager.FindByIdAsync(model.Id);
 
@@ -203,11 +203,11 @@ namespace SaleManager.Api.Controllers
                 var result = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
                 if (result.Succeeded)
                 {
-                    return Ok(result);
+                    return Ok(new ResponseData(result));
                 }
                 AddErrors(result);
             }
-            return BadRequest(ModelState);
+            return BadRequest(new ResponseData(ModelState));
         }
 
         [Authorize(Roles = "admin")]
@@ -215,7 +215,7 @@ namespace SaleManager.Api.Controllers
         public async Task<IActionResult> Delete([FromBody]SingleIdViewModel model)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return BadRequest(new ResponseData(ModelState));
 
             var user = await _userManager.FindByIdAsync(model.Id);
             if (user != null)
@@ -223,11 +223,11 @@ namespace SaleManager.Api.Controllers
                 var result = await _userManager.DeleteAsync(user);
                 if (result.Succeeded)
                 {
-                    return Ok(result);
+                    return Ok(new ResponseData(result));
                 }
                 AddErrors(result);
             }
-            return BadRequest(ModelState);
+            return BadRequest(new ResponseData(ModelState));
         }
 
         [Authorize]
@@ -235,7 +235,7 @@ namespace SaleManager.Api.Controllers
         public async Task<IActionResult> GetRoles([FromBody]SingleIdViewModel model)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return BadRequest(new ResponseData(ModelState));
 
             var roles = new List<string>();
             var user = await _userManager.FindByIdAsync(model.Id);
@@ -247,11 +247,11 @@ namespace SaleManager.Api.Controllers
                     roles.Add(role);
                 }
                 if (roles.Count > 0)
-                    return Ok(roles);
+                    return Ok(new ResponseData(roles));
                 else
                     return NotFound();
             }
-            return BadRequest(ModelState);
+            return BadRequest(new ResponseData(ModelState));
         }
 
         [Authorize(Roles = "admin")]
@@ -259,9 +259,9 @@ namespace SaleManager.Api.Controllers
         public async Task<IActionResult> AddToRole([FromBody]RoleModelViews model)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return BadRequest(new ResponseData(ModelState));
             if (model.Roles == null || model.Roles.Count == 0)
-                return Ok();
+                return Ok(new ResponseData(null));
 
             var user = await _userManager.FindByIdAsync(model.Id);
             if (user != null)
@@ -273,7 +273,7 @@ namespace SaleManager.Api.Controllers
                     await _userManager.AddToRoleAsync(user, role);
                 return Ok();   
             }
-            return BadRequest(ModelState);
+            return BadRequest(new ResponseData(ModelState));
         }
 
         [Authorize(Roles = "admin")]
@@ -281,7 +281,7 @@ namespace SaleManager.Api.Controllers
         public async Task<IActionResult> DeleteToRole([FromBody]RoleModelView model)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return BadRequest(new ResponseData(ModelState));
 
             var user = await _userManager.FindByIdAsync(model.Id);
             if (user != null)
@@ -289,11 +289,11 @@ namespace SaleManager.Api.Controllers
                 var result = await _userManager.RemoveFromRoleAsync(user, model.Role);
                 if (result.Succeeded)
                 {
-                    return Ok(result);
+                    return Ok(new ResponseData(result));
                 }
                 AddErrors(result);
             }
-            return BadRequest(ModelState);
+            return BadRequest(new ResponseData(ModelState));
         }
 
         [Authorize]
@@ -324,7 +324,7 @@ namespace SaleManager.Api.Controllers
                 }
             }
 
-            return BadRequest(ModelState);
+            return BadRequest(new ResponseData(ModelState));
         }
 
         ////[Authorize]

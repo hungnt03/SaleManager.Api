@@ -27,7 +27,7 @@ namespace SaleManager.Api.Controllers
         {
             var datas = await unitOfWork.ProductRepository.GetAll();
             AddImagePath(ref datas);
-            return Ok(datas.OrderBy(r => r.Name));
+            return Ok(new ResponseData(datas.OrderBy(r => r.Name)));
         }
 
         [HttpPost("product")]
@@ -37,9 +37,9 @@ namespace SaleManager.Api.Controllers
             {
                 var product = await unitOfWork.ProductRepository.GetSingleByCondition(c=>c.Barcode.Equals(model.Barcode));
                 AddImagePath(ref product);
-                return Ok(product);
+                return Ok(new ResponseData(product));
             }
-            return BadRequest(ModelState);
+            return BadRequest(new ResponseData(ModelState));
         }
 
         [HttpPost("search")]
@@ -70,9 +70,9 @@ namespace SaleManager.Api.Controllers
                         Img = product.Img
                     });
                 }
-                return Ok(products);
+                return Ok(new ResponseData(products));
             }
-            return BadRequest(ModelState);
+            return BadRequest(new ResponseData(ModelState));
         }
 
         [Authorize]
@@ -83,7 +83,7 @@ namespace SaleManager.Api.Controllers
             {
                 var product = await unitOfWork.ProductRepository.GetSingleByCondition(c => c.Barcode.Equals(model.Barcode));
                 if (product != null)
-                    return BadRequest(ModelState);
+                    return BadRequest(new ResponseData(ModelState));
 
                 if (product == null || string.IsNullOrEmpty(product.Barcode))
                 {
@@ -112,9 +112,9 @@ namespace SaleManager.Api.Controllers
                 };
                 var result = unitOfWork.ProductRepository.Add(product);
                 unitOfWork.Commit();
-                return Ok(result);
+                return Ok(new ResponseData(result));
             }
-            return BadRequest(ModelState);
+            return BadRequest(new ResponseData(ModelState));
         }
 
         [Authorize]
@@ -141,7 +141,7 @@ namespace SaleManager.Api.Controllers
                 unitOfWork.Commit();
                 return Ok();
             }
-            return BadRequest(ModelState);
+            return BadRequest(new ResponseData(ModelState));
         }
 
         [Authorize]
@@ -152,12 +152,12 @@ namespace SaleManager.Api.Controllers
             {
                 var product = await unitOfWork.ProductRepository.GetSingleByCondition(c => c.Barcode.Equals(model.Barcode));
                 if(product == null)
-                    return BadRequest(ModelState);
+                    return BadRequest(new ResponseData(ModelState));
                 unitOfWork.ProductRepository.Delete(product);
                 unitOfWork.Commit();
                 return Ok();
             }
-            return BadRequest(ModelState);
+            return BadRequest(new ResponseData(ModelState));
         }
         private void AddImagePath(ref IEnumerable<Product> products)
         {

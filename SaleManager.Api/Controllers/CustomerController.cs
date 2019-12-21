@@ -26,7 +26,7 @@ namespace SaleManager.Api.Controllers
         public async Task<IActionResult> GetAll()
         {
             var datas = await unitOfWork.CustomerRepository.GetAll();
-            return Ok(datas);
+            return Ok(new ResponseData(datas));
         }
 
         [Authorize]
@@ -34,7 +34,7 @@ namespace SaleManager.Api.Controllers
         public IActionResult GetById(int id)
         {
             var data = unitOfWork.CustomerRepository.GetSingleById(id);
-            return Ok(data);
+            return Ok(new ResponseData(data));
         }
 
         [Authorize]
@@ -53,9 +53,9 @@ namespace SaleManager.Api.Controllers
                 };
                 var result = unitOfWork.CustomerRepository.Add(customer);
                 unitOfWork.Commit();
-                return Ok(result);
+                return Ok(new ResponseData(result));
             }
-            return BadRequest(ModelState);
+            return BadRequest(new ResponseData(ModelState));
         }
 
         [Authorize]
@@ -77,7 +77,7 @@ namespace SaleManager.Api.Controllers
                 unitOfWork.Commit();
                 return Ok();
             }
-            return BadRequest(ModelState);
+            return BadRequest(new ResponseData(ModelState));
         }
         [Authorize]
         [HttpPost("delete")]
@@ -89,7 +89,7 @@ namespace SaleManager.Api.Controllers
                 unitOfWork.Commit();
                 return Ok();
             }
-            return BadRequest(ModelState);
+            return BadRequest(new ResponseData(ModelState));
         }
     }
 }

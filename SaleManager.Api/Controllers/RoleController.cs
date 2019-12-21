@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SaleManager.Api.Infrastructures;
 using SaleManager.Api.Models.Account;
 
 namespace SaleManager.Api.Controllers
@@ -28,14 +29,14 @@ namespace SaleManager.Api.Controllers
             var results = new List<RoleModelView>();
             var roles = await _roleManager.Roles.ToListAsync();
             if (roles == null || roles.Count == 0)
-                return NotFound(ModelState);
+                return NotFound(new ResponseData(ModelState));
 
             foreach(var role in roles)
             {
                 results.Add(new RoleModelView() { Id= role.Id, Role=role.Name });
             }
 
-            return Ok(results);
+            return Ok(new ResponseData(results));
         }
 
         //[Authorize(Roles = "admin")]
@@ -43,7 +44,7 @@ namespace SaleManager.Api.Controllers
         public async Task<IActionResult> CreateRole([FromBody]RoleModelView model)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return BadRequest(new ResponseData(ModelState));
 
             var role = await _roleManager.FindByNameAsync(model.Role);
             if (role == null)
@@ -51,11 +52,11 @@ namespace SaleManager.Api.Controllers
                 var result = await _roleManager.CreateAsync(new IdentityRole(model.Role));
                 if (result.Succeeded)
                 {
-                    return Ok(result);
+                    return Ok(new ResponseData(result));
                 }
                 AddErrors(result);
             }
-            return BadRequest(ModelState);
+            return BadRequest(new ResponseData(ModelState));
         }
 
         //[Authorize(Roles = "admin")]
@@ -63,7 +64,7 @@ namespace SaleManager.Api.Controllers
         public async Task<IActionResult> DeleteRole([FromBody]RoleModelView model)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return BadRequest(new ResponseData(ModelState));
 
             var role = await _roleManager.FindByIdAsync(model.Id);
             if (role != null)
@@ -71,11 +72,11 @@ namespace SaleManager.Api.Controllers
                 var result = await _roleManager.DeleteAsync(role);
                 if (result.Succeeded)
                 {
-                    return Ok(result);
+                    return Ok(new ResponseData(result));
                 }
                 AddErrors(result);
             }
-            return BadRequest(ModelState);
+            return BadRequest(new ResponseData(ModelState));
         }
 
         private void AddErrors(IdentityResult result)
